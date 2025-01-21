@@ -23,7 +23,7 @@ version = "2.8.4"
 source = "git+https://github.com/dojoengine/dojo?tag=v1.0.11#2c77db4a334a312ce53a005c560b3398fcb7bf99"
 
 [[package]]
-name = "wii_tanks"
+name = "dojo_tanks"
 version = "1.0.11"
 dependencies = [
  "dojo",

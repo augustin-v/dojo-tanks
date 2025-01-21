@@ -11,7 +11,7 @@ trait IActions<T> {
 #[dojo::contract]
 pub mod actions {
     use super::IActions;
-    use wii_tanks::models::{Tank, Projectile, MapTiles, Game, GameStatus, Vec2};
+    use dojo_tanks::models::{Tank, Projectile, MapTiles, Game, GameStatus, Vec2};
     use starknet::{ContractAddress, get_caller_address};
 
     #[derive(Drop, Clone, Serde)]
