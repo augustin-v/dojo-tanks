@@ -1252,8 +1252,8 @@
   },
   "contracts": [
     {
-      "address": "0x2115aaa49adb5178478e04d8707ab7fe361aa9e140866b7365c3bb1f1d93334",
-      "class_hash": "0x6cbb5ab40ad7b48dff70edeacc4902a9eeae63a9e36456f9f908aedb904fbd2",
+      "address": "0x13d37bd4802d144e8db9847c5fd301984a526e121a9fc9bf8acc38e230bd6a5",
+      "class_hash": "0xb75c2b3f97003e294d1409bc8aa2d084e2a1cba3eb2114c75038af0f6b7d6b",
       "abi": [
         {
           "type": "impl",
@@ -1308,48 +1308,62 @@
         {
           "type": "impl",
           "name": "ActionsImpl",
-          "interface_name": "dojo_starter::systems::actions::IActions"
-        },
-        {
-          "type": "enum",
-          "name": "dojo_starter::models::Direction",
-          "variants": [
-            {
-              "name": "Left",
-              "type": "()"
-            },
-            {
-              "name": "Right",
-              "type": "()"
-            },
-            {
-              "name": "Up",
-              "type": "()"
-            },
-            {
-              "name": "Down",
-              "type": "()"
-            }
-          ]
+          "interface_name": "dojo_tanks::systems::actions::IActions"
         },
         {
           "type": "interface",
-          "name": "dojo_starter::systems::actions::IActions",
+          "name": "dojo_tanks::systems::actions::IActions",
           "items": [
             {
               "type": "function",
-              "name": "spawn",
+              "name": "spawn_game",
               "inputs": [],
+              "outputs": [
+                {
+                  "type": "core::integer::u32"
+                }
+              ],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "move_tank",
+              "inputs": [
+                {
+                  "name": "game_id",
+                  "type": "core::integer::u32"
+                },
+                {
+                  "name": "direction",
+                  "type": "core::integer::u32"
+                }
+              ],
               "outputs": [],
               "state_mutability": "external"
             },
             {
               "type": "function",
-              "name": "move",
+              "name": "rotate_tank",
               "inputs": [
                 {
-                  "name": "direction",
-                  "type": "dojo_starter::models::Direction"
+                  "name": "game_id",
+                  "type": "core::integer::u32"
+                },
+                {
+                  "name": "rotation",
+                  "type": "core::integer::u32"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "shoot",
+              "inputs": [
+                {
+                  "name": "game_idea",
+                  "type": "core::integer::u32"
                 }
               ],
               "outputs": [],
@@ -1456,7 +1470,7 @@
         },
         {
           "type": "event",
-          "name": "dojo_starter::systems::actions::actions::Event",
+          "name": "dojo_tanks::systems::actions::actions::Event",
           "kind": "enum",
           "variants": [
             {
@@ -1476,8 +1490,10 @@
       "tag": "dojo_starter-actions",
       "selector": "0x7a1c71029f2d0b38e3ac89b09931d08b6e48417e079c289ff19a8698d0cba33",
       "systems": [
-        "spawn",
-        "move",
+        "spawn_game",
+        "move_tank",
+        "rotate_tank",
+        "shoot",
         "upgrade"
       ]
     }
@@ -1485,29 +1501,47 @@
   "models": [
     {
       "members": [],
-      "class_hash": "0x3f52c6cf17db224f4e7f88629adf7e907ff110baa0616c7e8ef17c5aecf1b1b",
-      "tag": "dojo_starter-DirectionsAvailable",
-      "selector": "0x77844f1facb51e60e546a9832d56c6bd04fa23be4fd5b57290caae5e9a3c1e4"
+      "class_hash": "0x316dd2591d1c8cb4537933881f674283f77e23ad660198f0093f082fcfe453d",
+      "tag": "dojo_starter-Game",
+      "selector": "0x19e11cf1403e104998a158f43ec6ae232dc65cf5445bcb29fb9fb5b7bb6c171"
     },
     {
       "members": [],
-      "class_hash": "0x5f79e21312b142fc289d3bd1e0f4c65ac3c4e532252c6fb1ad48b718d892dc",
-      "tag": "dojo_starter-Moves",
-      "selector": "0x2a29373f1af8348bd366a990eb3a342ef2cbe5e85160539eaca3441a673f468"
+      "class_hash": "0x660387cc1b06662d8e111433b425447f2b03ee03974be6d4c8d508508147905",
+      "tag": "dojo_starter-MapTiles",
+      "selector": "0x3fa748f478a16a90940b753fb0dc74b186d15dd3e14e7fd21de33dee060e37f"
     },
     {
       "members": [],
-      "class_hash": "0x2283c68ecba5c60bbbbd3b00659808a02244468e41a1d2cdba1312d65b83594",
-      "tag": "dojo_starter-Position",
-      "selector": "0x2ac8b4c190f7031b9fc44312e6b047a1dce0b3f2957c33a935ca7846a46dd5b"
+      "class_hash": "0x2e2e7d31445b89cbd36c2f640799480208c72f9fe47d44ec0a648c6fe1d4ae5",
+      "tag": "dojo_starter-Projectile",
+      "selector": "0x7fa4729a38087a04599c032e4d6705e18234477064d1d0eed01062b24406d95"
+    },
+    {
+      "members": [],
+      "class_hash": "0x692cd556ee0852a59f906cbb5dc3a708be76947e3d4f596d3242d5869d91c87",
+      "tag": "dojo_starter-Tank",
+      "selector": "0xdbab787567d3e6c16f8aaaa2bf46105fe04303facaba7c297947448cace219"
     }
   ],
   "events": [
     {
       "members": [],
-      "class_hash": "0x3dca5564f84050b20e66a2e5e7619201502d241b223ea73cfc05f29e6e20ea1",
-      "tag": "dojo_starter-Moved",
-      "selector": "0x504403e5c02b6442527721fc464d9ea5fc8f1ee600ab5ccd5c0845d36fd45f1"
+      "class_hash": "0x432de1215a3b7040d3612bd578fb943af587e10deaf46746eb4c4d618e4181f",
+      "tag": "dojo_starter-GameSpawned",
+      "selector": "0x369ab7b513690647aaea77f0374d18e734b1f0c79ec3962c7b8f74f6831cb25"
+    },
+    {
+      "members": [],
+      "class_hash": "0x7bfea8a4674bea94bf72e5d53b07ae134e72f8a2aada880133cfaf4759f899c",
+      "tag": "dojo_starter-ProjectileFired",
+      "selector": "0x22d0c01e19baaf2acee4b7529e720ea1998d2631e6aae1a88e23bf9b04ba5db"
+    },
+    {
+      "members": [],
+      "class_hash": "0x587ba4f795c617774513b3eaaa54f1ff1c3466e727f2e6816c3ec6870596cb0",
+      "tag": "dojo_starter-TankMoved",
+      "selector": "0x4dfc55538f05982e468973e04050b199f94ed3dbc0c62bc0c5325fb4b671bee"
     }
   ]
 }

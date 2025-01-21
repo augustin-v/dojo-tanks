@@ -8,7 +8,10 @@ pub struct Tank {
     pub is_alive: bool,
     pub position: Vec2,
     pub rotation: u32,
-    pub speed: u8
+    pub speed: u8,
+    pub shots_fired: u32,
+    pub last_move_timestamp: u64,
+    pub velocity: Vec2
 }
 
 #[derive(Drop, Clone, Serde, Debug)]
@@ -20,8 +23,10 @@ pub struct Projectile {
     player: ContractAddress,
     position: Vec2,
     velocity: Vec2,
+    direction: Vec2,
+    spawn_timestamp: u64,
     active: bool,
-    reload_time: u8
+    reload_time: u8,
 }
 
 
@@ -54,7 +59,8 @@ pub struct Game {
     #[key]
     game_id: u32,
     pub status: GameStatus,
-    pub player_count: u8
+    pub player_count: u8,
+    pub last_sync: u64
 }
 
 #[derive(Serde, Drop, Copy, PartialEq, Introspect, Debug)]
