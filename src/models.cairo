@@ -1,14 +1,14 @@
 use starknet::{ContractAddress};
 
-#[derive(Drop, Clone, Serde, Debug)]
+#[derive(Drop, Copy, Serde, Debug)]
 #[dojo::model]
 pub struct Tank {
     #[key]
     player: ContractAddress,
-    is_alive: bool,
-    position: Vec2,
-    rotation: u32,
-    speed: u8
+    pub is_alive: bool,
+    pub position: Vec2,
+    pub rotation: u32,
+    pub speed: u8
 }
 
 #[derive(Drop, Clone, Serde, Debug)]
@@ -44,16 +44,17 @@ enum TileType {
 
 #[derive(Drop, Copy, Serde, Debug, Introspect)]
 pub struct Vec2 {
-    x: u8,
-    y: u8
+    pub x: u8,
+    pub y: u8
 }
 
 #[derive(Drop, Copy, Serde, Debug)]
+#[dojo::model]
 pub struct Game {
     #[key]
     game_id: u32,
-    status: GameStatus,
-    player_count: u8
+    pub status: GameStatus,
+    pub player_count: u8
 }
 
 #[derive(Serde, Drop, Copy, PartialEq, Introspect, Debug)]
