@@ -1,2 +1,2 @@
 ## [WIP]
-Onchain Wii tanks inspired game using dojoengine 
+Onchain "Wii tanks" inspired game using dojoengine 
