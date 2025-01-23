@@ -60,7 +60,9 @@ export function MapTiles({ tank }: { tank?: TankType }) {
 
     const renderMap = () => {
         const grid = [];
-        const size = { x: 18, y: 12 }; // Match the contract's map size
+        const size = { x: 18, y: 12 }; // Matches the contract's map size
+
+        console.log("Current tank data:", tank);
 
         for (let y = 0; y < size.y; y++) {
             for (let x = 0; x < size.x; x++) {
@@ -70,6 +72,10 @@ export function MapTiles({ tank }: { tank?: TankType }) {
                     tank.position && 
                     tank.position.x.toString() === x.toString() && 
                     tank.position.y.toString() === y.toString();
+
+                if (isTankHere) {
+                    console.log("Tank should render at:", x, y); // Debug log
+                }
                 
                 grid.push(
                     <div 
