@@ -146,15 +146,17 @@ pub mod actions {
 
             let projectile_id = tank.shots_fired;
             tank.shots_fired += 1;
+            let direction = Vec2 {
+                x: (fast_cos(tank.rotation.into()) % (tank.speed.into())).try_into().unwrap_or(0),
+                y: (fast_sin(tank.rotation.into()) % (tank.speed.into())).try_into().unwrap_or(0)
+            };
+        
             let projectile = Projectile {
                 id: projectile_id,
                 player,
                 position: tank.position,
                 velocity: Vec2 { x: 1, y: 1 },
-                direction: Vec2 {
-                    x: (fast_cos(tank.rotation.into()).try_into().expect('"failed"') * tank.speed).try_into().unwrap(),
-                    y: (fast_sin(tank.rotation.into()).try_into().expect('"failed2"') * tank.speed).try_into().unwrap()
-                },
+                direction,
                 spawn_timestamp: timestamp,
                 active: true,
                 reload_time: 5
