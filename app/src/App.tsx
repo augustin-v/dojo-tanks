@@ -1,46 +1,45 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ParsedEntity, QueryBuilder } from "@dojoengine/sdk";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
-import { AccountInterface, addAddressPadding } from "starknet";
+import { AccountInterface, addAddressPadding, BigNumberish } from "starknet";
 import { useAccount } from "@starknet-react/core";
 import { WalletAccount } from "./wallet-account";
-import { useDojoSDK, useModel } from "@dojoengine/sdk/react";
-import { ModelsMapping } from "./typescript/models.gen";
+import { useDojoSDK } from "@dojoengine/sdk/react";
+import { Tank, SchemaType } from "./typescript/models.gen";
+import { MapTiles } from "./components/MapTiles";
 
 function App() {
     const { useDojoStore, client, sdk } = useDojoSDK();
     const { account } = useAccount();
     const state = useDojoStore((state) => state);
-
-    const entityId = useMemo(() => {
-        if (account) {
-            return getEntityIdFromKeys([BigInt(account.address)]);
-        }
-        return BigInt(0);
-    }, [account]);
+    const [isSpawning, setIsSpawning] = useState(false);
+    const [tankData, setTankData] = useState<Tank | undefined>();
 
     useEffect(() => {
-        let unsubscribe: (() => void) | undefined;
+        if (!account) return;
 
-        const subscribe = async (account: AccountInterface) => {
+        let unsubscribe: (() => void) | undefined;
+        
+        const subscribeToTank = async () => {
             const subscription = await sdk.subscribeEntityQuery({
                 query: new QueryBuilder()
                     .namespace("dojo_tanks", (n) =>
-                        n
-                            .entity("Tank", (e) =>
-                                e.eq(
-                                    "player",
-                                    addAddressPadding(account.address)
-                                )
+                        n.entity("Tank", (e) =>
+                            e.eq(
+                                "player",
+                                addAddressPadding(account.address)
                             )
-                            .entity("Game", (e) => e.eq("game_id", "1"))
+                        )
                     )
                     .build(),
                 callback: ({ error, data }) => {
                     if (error) {
-                        console.error("Error setting up entity sync:", error);
-                    } else if (data && data[0]) {
-                        state.updateEntity(data[0]);
+                        console.error("Error setting up tank sync:", error);
+                    } else if (Array.isArray(data) && data[0] && 'models' in data[0]) {
+                        const tankEntity = data[0] as ParsedEntity<SchemaType>;
+                        if (tankEntity.models?.dojo_tanks?.Tank) {
+                            setTankData(tankEntity.models.dojo_tanks.Tank as Tank);
+                        }
                     }
                 },
             });
@@ -48,9 +47,7 @@ function App() {
             unsubscribe = () => subscription.cancel();
         };
 
-        if (account) {
-            subscribe(account);
-        }
+        subscribeToTank();
 
         return () => {
             if (unsubscribe) {
@@ -59,7 +56,18 @@ function App() {
         };
     }, [sdk, account]);
 
-    const tank = useModel(entityId as string, ModelsMapping.Tank);
+    const handleSpawn = async () => {
+        if (!account) return;
+        
+        try {
+            setIsSpawning(true);
+            await client.actions.spawn(account);
+        } catch (error) {
+            console.error("Error spawning tank:", error);
+        } finally {
+            setIsSpawning(false);
+        }
+    };
 
     return (
         <div className="bg-black min-h-screen w-full p-4">
@@ -68,22 +76,31 @@ function App() {
                 
                 <div className="mt-8">
                     <button
-                        className="bg-blue-500 px-4 py-2 rounded"
-                        onClick={() => client.actions.spawn(account!)}
+                        className={`px-4 py-2 rounded ${
+                            isSpawning 
+                                ? 'bg-gray-500 cursor-not-allowed' 
+                                : 'bg-blue-500 hover:bg-blue-600'
+                        }`}
+                        onClick={handleSpawn}
+                        disabled={isSpawning || !account}
                     >
-                        Spawn Game
+                        {isSpawning ? 'Spawning...' : 'Spawn Tank'}
                     </button>
                     
-                    {tank && (
+                    {tankData && (
                         <div className="mt-4 text-white">
-                            <p>Tank Position: x: {tank.position.x}, y: {tank.position.y}</p>
-                            <p>Rotation: {tank.rotation}</p>
+                            <p>Tank Position: x: {tankData.position.x.toString()}, y: {tankData.position.y.toString()}</p>
+                            <p>Rotation: {tankData.rotation.toString()}</p>
                         </div>
                     )}
                 </div>
+
+                <MapTiles tank={tankData} />
             </div>
         </div>
     );
 }
+
+
 
 export default App;

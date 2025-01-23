@@ -77,16 +77,23 @@ export function setupWorld(provider: DojoProvider) {
 
 	const actions_spawn = async (snAccount: Account | AccountInterface) => {
 		try {
-			return await provider.execute(
+			// Spawn the tank
+			const result = await provider.execute(
 				snAccount,
 				build_actions_spawn_calldata(),
-				"dojo_tanks",
+				"dojo_tanks"
 			);
+			
+			// Wait briefly to ensure the tank is initialized
+			await new Promise(resolve => setTimeout(resolve, 100));
+			
+			return result;
 		} catch (error) {
 			console.error(error);
 			throw error;
 		}
 	};
+	
 
 
 
