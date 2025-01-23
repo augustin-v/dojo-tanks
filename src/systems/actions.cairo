@@ -62,7 +62,7 @@ pub mod actions {
                 player,
                 is_alive: true,
                 position: Vec2 { x: 9, y: 6 }, // Center of 18x12 map
-                rotation: 0,
+                rotation: 90,
                 speed: 1,
                 shots_fired: 0,
                 last_move_timestamp: get_block_timestamp().try_into().unwrap(),
@@ -146,15 +146,14 @@ pub mod actions {
 
             let projectile_id = tank.shots_fired;
             tank.shots_fired += 1;
-
             let projectile = Projectile {
                 id: projectile_id,
                 player,
                 position: tank.position,
                 velocity: Vec2 { x: 1, y: 1 },
                 direction: Vec2 {
-                    x: (fast_cos(tank.rotation.into()).try_into().unwrap() * tank.speed).try_into().unwrap(),
-                    y: (fast_sin(tank.rotation.into()).try_into().unwrap() * tank.speed).try_into().unwrap()
+                    x: (fast_cos(tank.rotation.into()).try_into().expect('"failed"') * tank.speed).try_into().unwrap(),
+                    y: (fast_sin(tank.rotation.into()).try_into().expect('"failed2"') * tank.speed).try_into().unwrap()
                 },
                 spawn_timestamp: timestamp,
                 active: true,
@@ -172,7 +171,7 @@ pub mod actions {
     #[generate_trait]
     impl InternalImpl of InternalTrait {
         fn world_default(self: @ContractState) -> dojo::world::WorldStorage {
-            self.world(@"wii_tanks")
+            self.world(@"dojo_tanks")
         }
     }
 }

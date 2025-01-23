@@ -1,9 +1,9 @@
 {
   "world": {
     "class_hash": "0x45575a88cc5cef1e444c77ce60b7b4c9e73a01cbbe20926d5a4c72a94011410",
-    "address": "0x525177c8afe8680d7ad1da30ca183e482cfcd6404c1e09d83fd3fa2994fd4b8",
-    "seed": "dojo_starter",
-    "name": "Dojo starter",
+    "address": "0x5f2f47c0427f86c1d44a33f88283ecf3ccca6367744bd12f38aa424bae4034c",
+    "seed": "dojo_tanks",
+    "name": "dojo_tanks",
     "entrypoints": [
       "uuid",
       "set_metadata",
@@ -1252,8 +1252,8 @@
   },
   "contracts": [
     {
-      "address": "0x13d37bd4802d144e8db9847c5fd301984a526e121a9fc9bf8acc38e230bd6a5",
-      "class_hash": "0xb75c2b3f97003e294d1409bc8aa2d084e2a1cba3eb2114c75038af0f6b7d6b",
+      "address": "0x797167a5a9bf365780d5d7dfc605be0e697c013afda03b6cb8d9727f92633cb",
+      "class_hash": "0x5aa0b33ad2502010082f59171117e8498b98eb5fe84e4b1b9e23a8d8f5c6852",
       "abi": [
         {
           "type": "impl",
@@ -1487,8 +1487,8 @@
         }
       ],
       "init_calldata": [],
-      "tag": "dojo_starter-actions",
-      "selector": "0x7a1c71029f2d0b38e3ac89b09931d08b6e48417e079c289ff19a8698d0cba33",
+      "tag": "dojo_tanks-actions",
+      "selector": "0x38f892c0e3d9746eb337bf8ab6b6140f830780385bb9f12a50525cebb511153",
       "systems": [
         "spawn_game",
         "move_tank",
@@ -1502,46 +1502,46 @@
     {
       "members": [],
       "class_hash": "0x316dd2591d1c8cb4537933881f674283f77e23ad660198f0093f082fcfe453d",
-      "tag": "dojo_starter-Game",
-      "selector": "0x19e11cf1403e104998a158f43ec6ae232dc65cf5445bcb29fb9fb5b7bb6c171"
+      "tag": "dojo_tanks-Game",
+      "selector": "0x58d45a6344359439c699f3e2e62a549754c0f9e00709406b3536ad74084bb9f"
     },
     {
       "members": [],
       "class_hash": "0x660387cc1b06662d8e111433b425447f2b03ee03974be6d4c8d508508147905",
-      "tag": "dojo_starter-MapTiles",
-      "selector": "0x3fa748f478a16a90940b753fb0dc74b186d15dd3e14e7fd21de33dee060e37f"
+      "tag": "dojo_tanks-MapTiles",
+      "selector": "0x321a29946bbc0adabfeefc34067d0218b8cd30b980e775905fdf18489602fd1"
     },
     {
       "members": [],
       "class_hash": "0x2e2e7d31445b89cbd36c2f640799480208c72f9fe47d44ec0a648c6fe1d4ae5",
-      "tag": "dojo_starter-Projectile",
-      "selector": "0x7fa4729a38087a04599c032e4d6705e18234477064d1d0eed01062b24406d95"
+      "tag": "dojo_tanks-Projectile",
+      "selector": "0x4dcba1eb872f69f36dd0815177aa84738b8e356eaaf442e78898948e19cbf09"
     },
     {
       "members": [],
       "class_hash": "0x692cd556ee0852a59f906cbb5dc3a708be76947e3d4f596d3242d5869d91c87",
-      "tag": "dojo_starter-Tank",
-      "selector": "0xdbab787567d3e6c16f8aaaa2bf46105fe04303facaba7c297947448cace219"
+      "tag": "dojo_tanks-Tank",
+      "selector": "0x35a5c20a5ac0e765efe29004d94388b8ac293048b4393f5af5d5c031d0d45b4"
     }
   ],
   "events": [
     {
       "members": [],
       "class_hash": "0x432de1215a3b7040d3612bd578fb943af587e10deaf46746eb4c4d618e4181f",
-      "tag": "dojo_starter-GameSpawned",
-      "selector": "0x369ab7b513690647aaea77f0374d18e734b1f0c79ec3962c7b8f74f6831cb25"
+      "tag": "dojo_tanks-GameSpawned",
+      "selector": "0x12c0b2129c22fd2e501b531652e4d889d27384bc31bcc4e5452feb2e3aaa757"
     },
     {
       "members": [],
       "class_hash": "0x7bfea8a4674bea94bf72e5d53b07ae134e72f8a2aada880133cfaf4759f899c",
-      "tag": "dojo_starter-ProjectileFired",
-      "selector": "0x22d0c01e19baaf2acee4b7529e720ea1998d2631e6aae1a88e23bf9b04ba5db"
+      "tag": "dojo_tanks-ProjectileFired",
+      "selector": "0x6c85857f41452de59e07750bbe6871ec20deec4eee33fe9cb1c93f8889d981b"
     },
     {
       "members": [],
       "class_hash": "0x587ba4f795c617774513b3eaaa54f1ff1c3466e727f2e6816c3ec6870596cb0",
-      "tag": "dojo_starter-TankMoved",
-      "selector": "0x4dfc55538f05982e468973e04050b199f94ed3dbc0c62bc0c5325fb4b671bee"
+      "tag": "dojo_tanks-TankMoved",
+      "selector": "0x3cf749c805ffbb243ec514f70ca452f122123b466e5f17e58071b14ee10fcbf"
     }
   ]
 }

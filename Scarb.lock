@@ -2,6 +2,11 @@
 version = 1
 
 [[package]]
+name = "alexandria_math"
+version = "0.2.1"
+source = "git+https://github.com/keep-starknet-strange/alexandria.git#162bed1c636d31ccaaa90ed3eb32c9eb1d5e3bd3"
+
+[[package]]
 name = "dojo"
 version = "1.0.11"
 source = "git+https://github.com/dojoengine/dojo?tag=v1.0.11#2c77db4a334a312ce53a005c560b3398fcb7bf99"
@@ -26,6 +31,7 @@ source = "git+https://github.com/dojoengine/dojo?tag=v1.0.11#2c77db4a334a312ce53
 name = "dojo_tanks"
 version = "1.0.11"
 dependencies = [
+ "alexandria_math",
  "dojo",
  "dojo_cairo_test",
 ]
