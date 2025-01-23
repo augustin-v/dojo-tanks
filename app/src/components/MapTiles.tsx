@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { QueryBuilder, ParsedEntity } from "@dojoengine/sdk";
 import { useDojoSDK } from "@dojoengine/sdk/react";
 import { MapTiles as MapTilesType, Tank as TankType, SchemaType } from "../typescript/models.gen";
+import tankSvg from '../assets/tank-svgrepo-com.svg';
+
 
 export function MapTiles({ tank }: { tank?: TankType }) {
     const { sdk } = useDojoSDK();
@@ -85,11 +87,15 @@ export function MapTiles({ tank }: { tank?: TankType }) {
                     >
                         {isTankHere && (
                             <div 
-                                className="absolute inset-0 flex items-center justify-center text-2xl"
-                                style={{ transform: `rotate(${tank.rotation.toString()}deg)` }}
-                            >
-                                🛡️
-                            </div>
+                            className="absolute inset-0 flex items-center justify-center"
+                            style={{ transform: `rotate(${tank.rotation.toString()}deg)` }}
+                        >
+                            <img 
+                                src={tankSvg} 
+                                alt="Tank"
+                                className="w-8 h-8" // Adjust size as needed
+                            />
+                        </div>
                         )}
                     </div>
                 );
