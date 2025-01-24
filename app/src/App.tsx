@@ -6,12 +6,31 @@ import { useDojoSDK } from "@dojoengine/sdk/react";
 import { Tank, SchemaType } from "./typescript/models.gen";
 import { MapTiles } from "./components/MapTiles";
 import { WalletAccount } from "./wallet-account";
+import { useMovement } from "./hooks/useMovement";
+
+
 function App() {
     const { useDojoStore, client, sdk } = useDojoSDK();
     const { account } = useAccount();
     const [isSpawning, setIsSpawning] = useState(false);
     const [tankData, setTankData] = useState<Tank | undefined>();
     const [entityId, setEntityId] = useState<string>();
+    const [localPosition, setLocalPosition] = useState<{ x: number, y: number }>({ x: 9, y: 6 });    
+    useEffect(() => {
+        if (tankData) {
+            setLocalPosition({
+                x: Number(tankData.position.x),
+                y: Number(tankData.position.y)
+            });
+        }
+    }, [tankData]);
+
+    useMovement({
+        account: account || null,
+        localPosition,
+        setLocalPosition,
+        tankRotation: Number(tankData?.rotation || 0)
+    });
 
     useEffect(() => {
         if (!account) return;
@@ -120,8 +139,10 @@ function App() {
                     )}
                 </div>
 
-                <MapTiles tank={tankData} />
-            </div>
+                <MapTiles 
+    tank={tankData} 
+    localPosition={localPosition}  // Add this prop
+/>            </div>
         </div>
     );
 }

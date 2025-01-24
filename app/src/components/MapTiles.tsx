@@ -5,7 +5,13 @@ import { MapTiles as MapTilesType, Tank as TankType, SchemaType } from "../types
 import tankSvg from '../assets/tank-svgrepo-com.svg';
 
 
-export function MapTiles({ tank }: { tank?: TankType }) {
+export function MapTiles({ 
+    tank, 
+    localPosition 
+}: { 
+    tank?: TankType;
+    localPosition?: { x: number, y: number };
+}) {
     const { sdk } = useDojoSDK();
     const [mapTiles, setMapTiles] = useState<Record<string, MapTilesType>>({});
 
@@ -62,40 +68,41 @@ export function MapTiles({ tank }: { tank?: TankType }) {
 
     const renderMap = () => {
         const grid = [];
-        const size = { x: 18, y: 12 }; // Matches the contract's map size
-
-        console.log("Current tank data:", tank);
+        const size = { x: 18, y: 12 };
 
         for (let y = 0; y < size.y; y++) {
             for (let x = 0; x < size.x; x++) {
                 const tile = mapTiles[`${x}-${y}`];
                 const tileType = tile?.tile_type || { Empty: {} };
-                const isTankHere = tank && 
-                    tank.position && 
-                    tank.position.x.toString() === x.toString() && 
-                    tank.position.y.toString() === y.toString();
-
-                if (isTankHere) {
-                    console.log("Tank should render at:", x, y); // Debug log
-                }
+                
+                // Use localPosition for smooth movement
+                const isTankHere = tank && localPosition && 
+                    Math.round(localPosition.x) === x && 
+                    Math.round(localPosition.y) === y;
                 
                 grid.push(
                     <div 
                         key={`${x}-${y}`}
-                        className={`w-12 h-12 flex items-center justify-center ${getTileColor(tileType)} ${isTankHere ? 'relative' : ''}`}
+                        className={`w-12 h-12 flex items-center justify-center ${getTileColor(tileType)}`}
                         title={`${x},${y}: ${Object.keys(tileType)[0]}`}
                     >
                         {isTankHere && (
                             <div 
-                            className="absolute inset-0 flex items-center justify-center"
-                            style={{ transform: `rotate(${tank.rotation.toString()}deg)` }}
-                        >
-                            <img 
-                                src={tankSvg} 
-                                alt="Tank"
-                                className="w-8 h-8" // Adjust size as needed
-                            />
-                        </div>
+                                className="absolute"
+                                style={{
+                                    transform: `translate(
+                                        ${(localPosition.x - Math.floor(localPosition.x)) * 48}px,
+                                        ${(localPosition.y - Math.floor(localPosition.y)) * 48}px
+                                    ) rotate(${tank.rotation.toString()}deg)`,
+                                    transition: 'transform 0.1s ease-out'
+                                }}
+                            >
+                                <img 
+                                    src={tankSvg} 
+                                    alt="Tank"
+                                    className="w-8 h-8"
+                                />
+                            </div>
                         )}
                     </div>
                 );
