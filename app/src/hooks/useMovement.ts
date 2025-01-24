@@ -1,97 +1,143 @@
-import { useCallback, useEffect, useState, useRef } from 'react';
-import { AccountInterface } from 'starknet';
-import { useDojoSDK } from '@dojoengine/sdk/react';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AccountInterface } from "starknet";
+import { useDojoSDK } from "@dojoengine/sdk/react";
 
 interface MovementProps {
     account: AccountInterface | null;
-    localPosition: { x: number, y: number };
-    setLocalPosition: (position: { x: number, y: number }) => void;
-    tankRotation: number;
+    localPosition: { x: number; y: number };
+    setLocalPosition: (position: { x: number; y: number }) => void;
+    setLocalRotation: (rotation: number) => void;
 }
 
-export const useMovement = ({ account, localPosition, setLocalPosition, tankRotation }: MovementProps) => {
+export const useMovement = ({
+    account,
+    localPosition,
+    setLocalPosition,
+    setLocalRotation
+}: MovementProps) => {
     const { client } = useDojoSDK();
-    const [targetPosition, setTargetPosition] = useState(localPosition);
+    const [localRotationState, setLocalRotationState] = useState(0);
+
+    const keysPressed = useRef<Set<string>>(new Set());
     const animationFrameRef = useRef<number>();
-    const lastUpdateRef = useRef<number>(Date.now());
+    const lastValidationRef = useRef<number>(Date.now());
+    const VALIDATION_INTERVAL = 5000;
 
-    const interpolatePosition = useCallback(() => {
+    const updateMovement = useCallback(() => {
+        if (!account) return;
+
+        let newX = localPosition.x;
+        let newY = localPosition.y;
+        let newRotation = localRotationState;
+
+        const moveSpeed = 0.2;
+        const rotationSpeed = 6;
+
+        // WASD movement
+        if (keysPressed.current.has("w")) {
+            newY = Math.max(0, newY - moveSpeed);
+        }
+        if (keysPressed.current.has("s")) {
+            newY = Math.min(11, newY + moveSpeed);
+        }
+        if (keysPressed.current.has("a")) {
+            newX = Math.max(0, newX - moveSpeed);
+        }
+        if (keysPressed.current.has("d")) {
+            newX = Math.min(17, newX + moveSpeed);
+        }
+
+        // Arrow-based rotation
+        if (keysPressed.current.has("ArrowRight")) {
+            newRotation = (newRotation + rotationSpeed) % 360;
+        }
+        if (keysPressed.current.has("ArrowLeft")) {
+            newRotation = (newRotation - rotationSpeed + 360) % 360;
+        }
+
+        const positionChanged = newX !== localPosition.x || newY !== localPosition.y;
+        const rotationChanged = newRotation !== localRotationState;
+
+        if (positionChanged) {
+            setLocalPosition({ x: newX, y: newY });
+        }
+        
+        if (rotationChanged) {
+            setLocalRotationState(newRotation);
+            setLocalRotation(newRotation);
+        }
+
+        // Only validate position on-chain
         const now = Date.now();
-        const deltaTime = (now - lastUpdateRef.current) / 1000;
-        lastUpdateRef.current = now;
+        if (positionChanged && now - lastValidationRef.current >= VALIDATION_INTERVAL) {
+            client.actions.validatePosition(
+                account,
+                1,
+                Math.round(newX),
+                Math.round(newY),
+                localRotationState
+            ).catch((error: Error) => {
+                console.error("Error validating position:", error);
+            });
 
-        const interpolationSpeed = 1.2; // Adjust for faster/slower movement
-        const epsilon = 0.01; // Threshold for considering movement complete
-
-        const dx = targetPosition.x - localPosition.x;
-        const dy = targetPosition.y - localPosition.y;
-
-        if (Math.abs(dx) < epsilon && Math.abs(dy) < epsilon) {
-            return;
+            lastValidationRef.current = now;
         }
 
-        const newX = localPosition.x + dx * interpolationSpeed * deltaTime;
-        const newY = localPosition.y + dy * interpolationSpeed * deltaTime;
+        animationFrameRef.current = requestAnimationFrame(updateMovement);
+    }, [
+        account,
+        localPosition,
+        localRotationState,
+        setLocalPosition,
+        setLocalRotation,
+        client.actions
+    ]);
 
-        setLocalPosition({ x: newX, y: newY });
 
-        animationFrameRef.current = requestAnimationFrame(interpolatePosition);
-    }, [localPosition, targetPosition, setLocalPosition]);
+    const handleKeyDown = useCallback((event: KeyboardEvent) => {
+        const key = event.key;
+        // Add this line to prevent default key behavior
 
-    const handleKeyPress = useCallback((event: KeyboardEvent) => {
-        if (!account || event.repeat) return;
-
-        let newX = targetPosition.x;
-        let newY = targetPosition.y;
-
-        switch (event.key.toLowerCase()) {
-            case 'w':
-                newY = Math.max(0, targetPosition.y - 1);
-                break;
-            case 's':
-                newY = Math.min(11, targetPosition.y + 1);
-                break;
-            case 'a':
-                newX = Math.max(0, targetPosition.x - 1);
-                break;
-            case 'd':
-                newX = Math.min(17, targetPosition.x + 1);
-                break;
-            default:
-                return;
+        
+        if (["w", "a", "s", "d", "ArrowLeft", "ArrowRight"].includes(key)) {
+            keysPressed.current.add(key);
+            if (!animationFrameRef.current) {
+                animationFrameRef.current = requestAnimationFrame(updateMovement);
+            }
         }
+    }, [updateMovement]);
+    
 
-        setTargetPosition({ x: newX, y: newY });
+    const handleKeyUp = useCallback((event: KeyboardEvent) => {
+        const key = event.key;
 
-        client.actions.validatePosition(
-            account,
-            1, // gameId
-            Math.round(newX),
-            Math.round(newY),
-            tankRotation
-        ).catch((error: Error) => {
-            console.error("Error validating position:", error);
-            // Revert to last valid position on error
-            setTargetPosition(localPosition);
-        });
-    }, [targetPosition, account, client.actions, tankRotation, localPosition]);
+        keysPressed.current.delete(key);
+        
+        // Only cancel if ALL keys are released
+        if (keysPressed.current.size === 0) {
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
+                animationFrameRef.current = undefined;
+            }
+        }
+    }, []);
+    
 
     useEffect(() => {
-        window.addEventListener('keydown', handleKeyPress);
+        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("keyup", handleKeyUp);
         return () => {
-            window.removeEventListener('keydown', handleKeyPress);
+            window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("keyup", handleKeyUp);
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, [handleKeyPress]);
+    }, [handleKeyDown, handleKeyUp]);
 
     useEffect(() => {
-        animationFrameRef.current = requestAnimationFrame(interpolatePosition);
-        return () => {
-            if (animationFrameRef.current) {
-                cancelAnimationFrame(animationFrameRef.current);
-            }
-        };
-    }, [interpolatePosition]);
+        if (keysPressed.current.size > 0 && !animationFrameRef.current) {
+            animationFrameRef.current = requestAnimationFrame(updateMovement);
+        }
+    }, [updateMovement]);
 };
