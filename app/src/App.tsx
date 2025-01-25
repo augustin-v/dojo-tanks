@@ -6,12 +6,42 @@ import { useDojoSDK } from "@dojoengine/sdk/react";
 import { Tank, SchemaType } from "./typescript/models.gen";
 import { MapTiles } from "./components/MapTiles";
 import { WalletAccount } from "./wallet-account";
+import { useMovement } from "./hooks/useMovement";
+import { useCallback } from "react";
+import { ShootinComponent } from "./components/ShootinComponent";
+
+
 function App() {
     const { useDojoStore, client, sdk } = useDojoSDK();
     const { account } = useAccount();
     const [isSpawning, setIsSpawning] = useState(false);
     const [tankData, setTankData] = useState<Tank | undefined>();
     const [entityId, setEntityId] = useState<string>();
+    const [localPosition, setLocalPosition] = useState<{ x: number, y: number }>();
+    const [bulletId, setBulletId] = useState<number | null>(null);
+
+    const [localRotation, setLocalRotation] = useState<number>(0);
+  
+    useEffect(() => {
+        if (tankData) {
+            setLocalPosition({
+                x: Number(tankData.position.x),
+                y: Number(tankData.position.y)
+            });
+        }
+    }, [tankData]);
+
+    useMovement({
+        account: account || null,
+        localPosition: localPosition || { x: 0, y: 0 }, // This is a workaround, better to initialize state properly
+        setLocalPosition: useCallback((pos: { x: number, y: number }) => {
+            setLocalPosition(pos);
+        }, []),
+        setLocalRotation: useCallback((rot: number) => {
+            setLocalRotation(rot);
+        }, [])
+    });
+    
 
     useEffect(() => {
         if (!account) return;
@@ -35,7 +65,6 @@ function App() {
                         if (error) {
                             console.error("Error setting up tank sync:", error);
                         } else {
-                            // Get the first entity from the object
                             const entityId = Object.keys(data)[0];
                             const entity = data[entityId];
                             
@@ -45,20 +74,19 @@ function App() {
                             }
                         }
                     }
+                    
             });
     
             unsubscribe = () => subscription.cancel();
         };
     
         subscribeToTank();
-    
         return () => {
             if (unsubscribe) {
                 unsubscribe();
             }
         };
     }, [sdk, account]);
-    
 
     const handleSpawn = async () => {
         if (!account) return;
@@ -67,7 +95,6 @@ function App() {
             setIsSpawning(true);
             await client.actions.spawn(account);
             
-            // Get the tank entity after spawning
             const entity = await sdk.getEntities({
                 query: new QueryBuilder()
                     .namespace("dojo_tanks", (n) => 
@@ -93,7 +120,6 @@ function App() {
             setIsSpawning(false);
         }
     };
-    
 
     return (
         <div className="bg-black min-h-screen w-full p-4">
@@ -114,15 +140,20 @@ function App() {
                     
                     {tankData && (
                         <div className="mt-4 text-white">
-                            <p>Tank Position: x: {tankData.position.x.toString()}, y: {tankData.position.y.toString()}</p>
-                            <p>Rotation: {tankData.rotation.toString()}</p>
+                            <p>Onchain Tank Position: x: {tankData.position.x.toString()}, y: {tankData.position.y.toString()}</p>
+                            <ShootinComponent />
                         </div>
                     )}
                 </div>
 
-                <MapTiles tank={tankData} />
+                <MapTiles 
+    tank={tankData} 
+    localPosition={localPosition}  // Add fallback
+    localRotation={localRotation}
+/>
             </div>
         </div>
     );
 }
-export default App
+
+export default App;

@@ -1252,8 +1252,8 @@
   },
   "contracts": [
     {
-      "address": "0x797167a5a9bf365780d5d7dfc605be0e697c013afda03b6cb8d9727f92633cb",
-      "class_hash": "0x67ffb92890f49058e3deddea3f9fbdeb1bd1afc13e420916b68899919b54c2b",
+      "address": "0x7f29fa933024479bcbb7f66afbd1ae722d70c4d5b134d730a5f341e940aaf16",
+      "class_hash": "0x5b529d8f4f609034fa747854e2cde2f4937a2942b0b817830fb9587de1d6b7c",
       "abi": [
         {
           "type": "impl",
@@ -1316,7 +1316,7 @@
           "items": [
             {
               "type": "function",
-              "name": "spawn_game",
+              "name": "spawn",
               "inputs": [],
               "outputs": [
                 {
@@ -1362,7 +1362,51 @@
               "name": "shoot",
               "inputs": [
                 {
-                  "name": "game_idea",
+                  "name": "game_id",
+                  "type": "core::integer::u32"
+                }
+              ],
+              "outputs": [
+                {
+                  "type": "core::integer::u32"
+                }
+              ],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "validate_position",
+              "inputs": [
+                {
+                  "name": "game_id",
+                  "type": "core::integer::u32"
+                },
+                {
+                  "name": "x",
+                  "type": "core::integer::u8"
+                },
+                {
+                  "name": "y",
+                  "type": "core::integer::u8"
+                },
+                {
+                  "name": "rotation",
+                  "type": "core::integer::u32"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "got_hit",
+              "inputs": [
+                {
+                  "name": "game_id",
+                  "type": "core::integer::u8"
+                },
+                {
+                  "name": "projectile_id",
                   "type": "core::integer::u32"
                 }
               ],
@@ -1490,10 +1534,12 @@
       "tag": "dojo_tanks-actions",
       "selector": "0x38f892c0e3d9746eb337bf8ab6b6140f830780385bb9f12a50525cebb511153",
       "systems": [
-        "spawn_game",
+        "spawn",
         "move_tank",
         "rotate_tank",
         "shoot",
+        "validate_position",
+        "got_hit",
         "upgrade"
       ]
     }
@@ -1536,6 +1582,12 @@
       "class_hash": "0x7bfea8a4674bea94bf72e5d53b07ae134e72f8a2aada880133cfaf4759f899c",
       "tag": "dojo_tanks-ProjectileFired",
       "selector": "0x6c85857f41452de59e07750bbe6871ec20deec4eee33fe9cb1c93f8889d981b"
+    },
+    {
+      "members": [],
+      "class_hash": "0x6f4571de4cc3e7361babb5cab300920e55d248d1ebd99eade6f11d36cb8b96a",
+      "tag": "dojo_tanks-TankHit",
+      "selector": "0x614eadc013758868f026dcce29574ce151ad5bc66e1a39a478b319c7b43b11a"
     },
     {
       "members": [],

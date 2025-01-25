@@ -105,6 +105,21 @@ export interface ProjectileFiredValue {
 	position: Vec2;
 }
 
+// Type definition for `dojo_tanks::systems::actions::actions::TankHit` struct
+export interface TankHit {
+	player: string;
+	game_id: BigNumberish;
+	is_alive: boolean;
+	projectile_id: BigNumberish;
+}
+
+// Type definition for `dojo_tanks::systems::actions::actions::TankHitValue` struct
+export interface TankHitValue {
+	game_id: BigNumberish;
+	is_alive: boolean;
+	projectile_id: BigNumberish;
+}
+
 // Type definition for `dojo_tanks::systems::actions::actions::TankMoved` struct
 export interface TankMoved {
 	player: string;
@@ -149,6 +164,8 @@ export interface SchemaType extends ISchemaType {
 		GameSpawnedValue: WithFieldOrder<GameSpawnedValue>,
 		ProjectileFired: WithFieldOrder<ProjectileFired>,
 		ProjectileFiredValue: WithFieldOrder<ProjectileFiredValue>,
+		TankHit: WithFieldOrder<TankHit>,
+		TankHitValue: WithFieldOrder<TankHitValue>,
 		TankMoved: WithFieldOrder<TankMoved>,
 		TankMovedValue: WithFieldOrder<TankMovedValue>,
 	},
@@ -255,6 +272,19 @@ export const schema: SchemaType = {
 			fieldOrder: ['position'],
 		position: { x: 0, y: 0, },
 		},
+		TankHit: {
+			fieldOrder: ['player', 'game_id', 'is_alive', 'projectile_id'],
+			player: "",
+			game_id: 0,
+			is_alive: false,
+			projectile_id: 0,
+		},
+		TankHitValue: {
+			fieldOrder: ['game_id', 'is_alive', 'projectile_id'],
+			game_id: 0,
+			is_alive: false,
+			projectile_id: 0,
+		},
 		TankMoved: {
 			fieldOrder: ['player', 'position', 'game_id'],
 			player: "",
@@ -284,6 +314,8 @@ export enum ModelsMapping {
 	GameSpawnedValue = 'dojo_tanks-GameSpawnedValue',
 	ProjectileFired = 'dojo_tanks-ProjectileFired',
 	ProjectileFiredValue = 'dojo_tanks-ProjectileFiredValue',
+	TankHit = 'dojo_tanks-TankHit',
+	TankHitValue = 'dojo_tanks-TankHitValue',
 	TankMoved = 'dojo_tanks-TankMoved',
 	TankMovedValue = 'dojo_tanks-TankMovedValue',
 }
