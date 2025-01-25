@@ -8,6 +8,8 @@ import { MapTiles } from "./components/MapTiles";
 import { WalletAccount } from "./wallet-account";
 import { useMovement } from "./hooks/useMovement";
 import { useCallback } from "react";
+import { ShootinComponent } from "./components/ShootinComponent";
+
 
 function App() {
     const { useDojoStore, client, sdk } = useDojoSDK();
@@ -16,6 +18,7 @@ function App() {
     const [tankData, setTankData] = useState<Tank | undefined>();
     const [entityId, setEntityId] = useState<string>();
     const [localPosition, setLocalPosition] = useState<{ x: number, y: number }>();
+    const [bulletId, setBulletId] = useState<number | null>(null);
 
     const [localRotation, setLocalRotation] = useState<number>(0);
   
@@ -138,6 +141,7 @@ function App() {
                     {tankData && (
                         <div className="mt-4 text-white">
                             <p>Onchain Tank Position: x: {tankData.position.x.toString()}, y: {tankData.position.y.toString()}</p>
+                            <ShootinComponent />
                         </div>
                     )}
                 </div>

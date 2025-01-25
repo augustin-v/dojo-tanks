@@ -3,19 +3,89 @@ import { QueryBuilder, ParsedEntity } from "@dojoengine/sdk";
 import { useDojoSDK } from "@dojoengine/sdk/react";
 import { MapTiles as MapTilesType, Tank as TankType, SchemaType } from "../typescript/models.gen";
 import tankSvg from '../assets/tank-svgrepo-com.svg';
+import bulletSvg from '../assets/bullet.svg'
 
+
+interface Bullet {
+    id: number;
+    x: number;
+    y: number;
+    direction: number;
+    bounced: boolean;
+}
 
 export function MapTiles({ 
     tank, 
     localPosition,
-    localRotation 
+    localRotation,
+    bulletId, 
 }: { 
     tank?: TankType;
     localPosition?: { x: number, y: number };
     localRotation?: number;
+    bulletId?: number | null;
 }) {
     const { sdk } = useDojoSDK();
     const [mapTiles, setMapTiles] = useState<Record<string, MapTilesType>>({});
+    const [bullets, setBullets] = useState<Bullet[]>([]);
+
+    useEffect(() => {
+        if (bulletId !== null && bulletId !== undefined && localPosition && localRotation) {
+            const newBullet: Bullet = {
+                id: bulletId,
+                x: localPosition.x,
+                y: localPosition.y,
+                direction: localRotation,
+                bounced: false
+            };
+            setBullets(prev => [...prev, newBullet]);
+        }
+    }, [bulletId, localPosition, localRotation]);
+
+    // Animate bullets
+    useEffect(() => {
+        const BULLET_SPEED = 0.3;
+        let animationFrame: number;
+
+        const updateBullets = () => {
+            setBullets(prevBullets => 
+                prevBullets.filter(bullet => {
+                    // Convert direction to radians
+                    const rad = (bullet.direction - 90) * Math.PI / 180;
+                    
+                    // Calculate new position
+                    let newX = bullet.x + Math.cos(rad) * BULLET_SPEED;
+                    let newY = bullet.y + Math.sin(rad) * BULLET_SPEED;
+
+                    // Handle bouncing
+                    if (!bullet.bounced) {
+                        if (newX <= 0 || newX >= 17) {
+                            bullet.direction = 180 - bullet.direction;
+                            bullet.bounced = true;
+                        }
+                        if (newY <= 0 || newY >= 11) {
+                            bullet.direction = 360 - bullet.direction;
+                            bullet.bounced = true;
+                        }
+                    }
+
+                    // Update position
+                    bullet.x = Math.max(0, Math.min(17, newX));
+                    bullet.y = Math.max(0, Math.min(11, newY));
+
+                    // Remove bullet if it's out of bounds after bounce
+                    return !(bullet.bounced && (
+                        bullet.x <= 0 || bullet.x >= 17 ||
+                        bullet.y <= 0 || bullet.y >= 11
+                    ));
+                })
+            );
+            animationFrame = requestAnimationFrame(updateBullets);
+        };
+
+        animationFrame = requestAnimationFrame(updateBullets);
+        return () => cancelAnimationFrame(animationFrame);
+    }, []);
 
     useEffect(() => {
         let unsubscribe: (() => void) | undefined;
@@ -72,6 +142,7 @@ export function MapTiles({
         const grid = [];
         const size = { x: 18, y: 12 };
         
+        // First render the base grid with tanks
         for (let y = 0; y < size.y; y++) {
             for (let x = 0; x < size.x; x++) {
                 const tile = mapTiles[`${x}-${y}`];
@@ -113,14 +184,50 @@ export function MapTiles({
                 );
             }
         }
+    
+        // Then add bullets on top
+        bullets.forEach(bullet => {
+            const gridX = Math.floor(bullet.x);
+            const gridY = Math.floor(bullet.y);
+            const offsetX = (bullet.x - gridX) * 32;
+            const offsetY = (bullet.y - gridY) * 32;
+    
+            grid.push(
+                <div 
+                    key={`bullet-${bullet.id}`}
+                    className="absolute"
+                    style={{
+                        transform: `translate(
+                            ${gridX * 32 + offsetX}px,
+                            ${gridY * 32 + offsetY}px
+                        )`,
+                        transition: 'transform 0.05s linear',
+                        willChange: 'transform',
+                        zIndex: 20
+                    }}
+                >
+                    <img 
+                        src={bulletSvg} 
+                        alt="Bullet"
+                        className="w-2 h-2"
+                        style={{ 
+                            transform: `rotate(${bullet.direction}deg)`
+                        }}
+                    />
+                </div>
+            );
+        });
+    
         return grid;
     };
-
+    
     return (
         <div className="mt-4 bg-amber-50/10 p-3 rounded-lg w-fit mx-auto shadow-lg">
-            <div className="grid grid-cols-18 gap-[1px] w-[576px]">
+            <div className="grid grid-cols-18 gap-[1px] w-[576px] relative">
                 {renderMap()}
             </div>
         </div>
     );
+    
+    
 }
