@@ -44,6 +44,9 @@ importers:
       immer:
         specifier: ^10.1.1
         version: 10.1.1
+      phaser:
+        specifier: ^3.87.0
+        version: 3.87.0
       pixi.js:
         specifier: ^8.7.2
         version: 8.7.2
@@ -1504,6 +1507,9 @@ packages:
   path-scurry@1.11.1:
     resolution: {integrity: sha512-Xa4Nw17FS9ApQFJ9umLiJS4orGjm7ZzwUrwamcGQuHSzDyth9boKDaycYdDcZDuqYATXw4HFXgaqWTctW/v1HA==}
     engines: {node: '>=16 || 14 >=14.18'}
+
+  phaser@3.87.0:
+    resolution: {integrity: sha512-AyI1b3T5fp05gzf6WUmu2FNqaZL+Y7w88yBRLf7YZXF9bncUSHpnDrupnTGoPqy/RKHRLBcay7zWeqQ2wiMWcw==}
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
@@ -3319,6 +3325,10 @@ snapshots:
     dependencies:
       lru-cache: 10.4.3
       minipass: 7.1.2
+
+  phaser@3.87.0:
+    dependencies:
+      eventemitter3: 5.0.1
 
   picocolors@1.1.1: {}
 

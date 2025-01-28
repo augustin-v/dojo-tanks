@@ -1252,8 +1252,8 @@
   },
   "contracts": [
     {
-      "address": "0x7f29fa933024479bcbb7f66afbd1ae722d70c4d5b134d730a5f341e940aaf16",
-      "class_hash": "0x5b529d8f4f609034fa747854e2cde2f4937a2942b0b817830fb9587de1d6b7c",
+      "address": "0x6a80310ef0d06ab1df58c14540530985e93ce3bcd76a9bba2a42909a20b4ea9",
+      "class_hash": "0x46cd1e6479a28eacbc1bddbf865b99264b75881cbd9eb2ed076237443001f23",
       "abi": [
         {
           "type": "impl",
@@ -1591,7 +1591,7 @@
     },
     {
       "members": [],
-      "class_hash": "0x587ba4f795c617774513b3eaaa54f1ff1c3466e727f2e6816c3ec6870596cb0",
+      "class_hash": "0x36e0cc3cd5051830f293c95cd939957e0a36ff20ab143ad35c11f368d1ed8fd",
       "tag": "dojo_tanks-TankMoved",
       "selector": "0x3cf749c805ffbb243ec514f70ca452f122123b466e5f17e58071b14ee10fcbf"
     }

@@ -59,6 +59,8 @@ export const useMovement = ({
         const rotationChanged = newRotation !== localRotationState;
 
         if (positionChanged) {
+            console.log("Updating position:", newX, newY); // Debug log
+
             setLocalPosition({ x: newX, y: newY });
         }
         
@@ -96,9 +98,8 @@ export const useMovement = ({
 
     const handleKeyDown = useCallback((event: KeyboardEvent) => {
         const key = event.key;
-        // Add this line to prevent default key behavior
-
-        
+        event.preventDefault(); // Add this line to prevent default behavior
+    
         if (["w", "a", "s", "d", "ArrowLeft", "ArrowRight"].includes(key)) {
             keysPressed.current.add(key);
             if (!animationFrameRef.current) {
